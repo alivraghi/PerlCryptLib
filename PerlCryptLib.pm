@@ -8,7 +8,7 @@ use Carp;
 require Exporter;
 use AutoLoader;
 
-our $VERSION = '1.09';
+our $VERSION = '1.11';
 
 
 #############################################################################
@@ -114,7 +114,7 @@ our $VERSION = '1.09';
 							cryptInit cryptEnd 
 							cryptQueryCapability 
 							cryptCreateContext cryptDestroyContext cryptDestroyObject 
-							cryptGenerateKey cryptGenerateKeyAsync cryptAsyncQuery cryptAsyncCancel 
+							cryptGenerateKey  
 							cryptEncrypt cryptDecrypt 
 							cryptSetAttribute cryptSetAttributeString cryptGetAttribute cryptGetAttributeString cryptDeleteAttribute 
 							cryptAddRandom 
@@ -130,7 +130,8 @@ our $VERSION = '1.09';
 							cryptDeviceOpen cryptDeviceClose cryptDeviceQueryCapability cryptDeviceCreateContext 
 							cryptLogin cryptLogout 
 						);
-
+	# Add deprecated functions when CRYPTLIB_VERSION prior 3.4.0
+	push @FUNCTIONS, qw(cryptGenerateKeyAsync cryptAsyncQuery cryptAsyncCancel) if &CRYPTLIB_VERSION < 3400;
 
 	# Esportazione costanti e funzioni
 	our @ISA = qw(Exporter);
@@ -168,6 +169,8 @@ sub AUTOLOAD {
 
 require XSLoader;
 XSLoader::load('PerlCryptLib', $VERSION);
+## Add deprecated functions if CRYPTLIB_VERSION is less than 3.4.0
+#XSLoader::load('PerlCryptLib-deprecated-340', $VERSION) if &CRYPTLIB_VERSION < 3400;
 
 if ( __FILE__ eq "$0" ) {
 	# TEST PACKAGE SPACE
@@ -463,7 +466,7 @@ Alvaro Livraghi, <perlcryptlib@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2006-2009 Alvaro Livraghi. All Rights Reserved.
+Copyright (C) 2006-2010 Alvaro Livraghi. All Rights Reserved.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

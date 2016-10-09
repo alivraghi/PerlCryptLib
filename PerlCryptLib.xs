@@ -20,8 +20,6 @@
 
 MODULE = PerlCryptLib		PACKAGE = PerlCryptLib		
 
-PROTOTYPES: DISABLE
-
 INCLUDE: const-xs.inc
 
 ################################################################################
@@ -43,7 +41,8 @@ void * shift_buffer(buffer, length, offset)
 	INIT:
 		void * __buffer;
 	CODE:
-		if ( __buffer = (void *)malloc(length) ) {
+		__buffer = (void *)malloc(length);
+		if ( __buffer != 0 ) {
 			length -= offset;
 			buffer += offset;
 			memcpy(__buffer, buffer, length);
@@ -509,8 +508,9 @@ int cryptDeviceQueryCapability(cryptDevice, cryptAlgo, cryptQueryInfo)
 	const int cryptDevice;
 	const int cryptAlgo;
 	HV * cryptQueryInfo;
-	CODE:
+	INIT:
 		CRYPT_QUERY_INFO dummy;
+	CODE:
 		RETVAL = cryptDeviceQueryCapability(cryptDevice, cryptAlgo, &dummy);
 		if ( RETVAL == CRYPT_OK ) {
 			hv_store(cryptQueryInfo, "algoName",    8, newSVpv(dummy.algoName, strlen(dummy.algoName)), 0);
@@ -572,8 +572,9 @@ int cryptGetCertExtension(certificate, oid, criticalFlag, extension, extensionMa
 int cryptQueryCapability(cryptAlgo, cryptQueryInfo)
 	const int cryptAlgo;
 	HV * cryptQueryInfo;
-	CODE:
+	INIT:
 		CRYPT_QUERY_INFO dummy;
+	CODE:
 		RETVAL = cryptQueryCapability(cryptAlgo, &dummy);
 		if ( RETVAL == CRYPT_OK ) {
 			hv_store(cryptQueryInfo, "algoName",    8, newSVpv(dummy.algoName, strlen(dummy.algoName)), 0);
@@ -590,8 +591,9 @@ int cryptQueryObject(objectData, objectDataLength, cryptObjectInfo)
 	const void * objectData;
 	const int objectDataLength;
 	HV * cryptObjectInfo;
-	CODE:
+	INIT:
 		CRYPT_OBJECT_INFO dummy;
+	CODE:
 		RETVAL = cryptQueryObject(objectData, objectDataLength, &dummy);
 		if ( RETVAL == CRYPT_OK ) {
 			hv_store(cryptObjectInfo, "objectType", 10, newSVnv(dummy.objectType), 0);

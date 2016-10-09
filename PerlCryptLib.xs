@@ -20,6 +20,8 @@
 
 MODULE = PerlCryptLib		PACKAGE = PerlCryptLib		
 
+PROTOTYPES: DISABLE
+
 INCLUDE: const-xs.inc
 
 ################################################################################
